@@ -1,3 +1,4 @@
+import java.io.File;
 
 /**
  * @author Adam Driver
@@ -10,13 +11,17 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-//		try {
-//			Config.write();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
+		File configFile = new File("config.txt");
+		
+		if (!configFile.exists()) {
+			try {
+				Config.write();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		Config param = null;
 		try {
@@ -24,7 +29,22 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(param.name + ",[" + param.dim[0] + "," + param.dim[1] + "]," + param.seaLevel);
+		
+		// Currently generates a map of random noise to be drawn
+		int[][] map = new int[param.dim[0]][param.dim[1]];
+		for (int x = 0; x < param.dim[0]; x++) {
+			for (int y = 0; y < param.dim[1]; y++) {
+				map[x][y] = (int) (Math.random() * 255);
+			}
+		}
+		
+		
+		DrawHeights.drawPNG(param,Map.generateFinal(param));
+		
+//		for (int i = 0; i < 20; i++) {
+//			double[] v = Map.randVector();
+//			System.out.println(v[0] + "," + v[1]);
+//		}
 	}
 
 }
