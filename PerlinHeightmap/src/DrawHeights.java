@@ -17,7 +17,17 @@ public class DrawHeights {
 		// Iterates through each pixel in the image and shades it using the value in the map array
 		for (int x = 0; x < param.dim[0]; x++) {
 			for (int y = 0; y < param.dim[1]; y++) {
-				g2d.setColor(new Color(map[x][y], map[x][y], map[x][y]));
+				
+				if (map[x][y] < param.seaLevel) {
+					int blue = 204*map[x][y]/param.seaLevel;
+					g2d.setColor(new Color(0, blue/2, blue));
+				}
+				
+				else {
+					int green = 204*(map[x][y] - param.seaLevel)/(255-param.seaLevel) + 51;
+					g2d.setColor(new Color(green/4, green, green/4));
+				}
+				
 				g2d.drawLine(x, y, x, y);
 			}
 		}
