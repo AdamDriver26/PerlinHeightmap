@@ -4,28 +4,77 @@ public class Map {
 	public static int[][] generateFinal(Config param) {
 		
 		int[][] map = new int[ param.dim[0] ][ param.dim[1] ];
+		int[][] base = new int[ param.dim[0] ][ param.dim[1] ];
 		int[][] layer1 = new int[ param.dim[0] ][ param.dim[1] ];
 		int[][] layer2 = new int[ param.dim[0] ][ param.dim[1] ];
 		int[][] layer3 = new int[ param.dim[0] ][ param.dim[1] ];
 		int[][] layer4 = new int[ param.dim[0] ][ param.dim[1] ];
-		int[][] layer5 = new int[ param.dim[0] ][ param.dim[1] ];
 		
 		// if/else for whether you want an island generated. If true use 3D/rotated Gaussian distribution. Otherwise use another layer of perlin noise with 2*scale.
 		
-		layer1 = generatePerlinNoise(param.dim, 2*param.scale);
-		layer2 = generatePerlinNoise(param.dim, param.scale);
-		layer3 = generatePerlinNoise(param.dim, param.scale/2);
-		layer4 = generatePerlinNoise(param.dim, param.scale/4);
-		layer5 = generatePerlinNoise(param.dim, param.scale/8);
+		// The plane style randomly assigns heights at corners then interpolates bilinearly between them.
+		if (param.style.equals("plane")) {
+			// The "limit" decides the upper and lower bound of random values decided for the corners of the plane, proportional to seaLevel.
+			// TWEAK THIS
+			double limit = param.seaLevel/3.0;
+			
+			double topLeftCorner =  (255.0 - 2.0*limit) * Math.random() + limit ;
+			double topRightCorner = (255.0 - 2.0*limit) * Math.random() + limit ;
+			double bottomLeftCorner = (255.0 - 2.0*limit) * Math.random() + limit ;
+			double bottomRightCorner = (255.0 - 2.0*limit) * Math.random() + limit ;
+			
+			for (int x = 0; x < param.dim[0]; x++) {
+				for (int y = 0; y < param.dim[1]; y++) {
+					
+					double topEdgeInterpolate = topLeftCorner*(param.dim[0] - x)/param.dim[0] + topRightCorner*x/param.dim[0];
+					double bottomEdgeInterpolate = bottomLeftCorner*(param.dim[0] - x)/param.dim[0] + bottomRightCorner*x/param.dim[0];
+					
+					base[x][y] += (int) (topEdgeInterpolate*(param.dim[1] - y)/param.dim[1] + bottomEdgeInterpolate*y/param.dim[1]);
+					
+				}
+			}
+		}
+		
+		else if (param.style.equals("island")) {
+			int maxRadius;
+			if (param.dim[0] < param.dim[1]) {
+				maxRadius = param.dim[0]/2;
+			}
+			else {
+				maxRadius = param.dim[1]/2;
+			}
+			
+			
+			
+			for (int x = 0; x < param.dim[0]; x++) {
+				for (int y = 0; y < param.dim[1]; y++) {
+					
+					double radius = Math.pow( (param.dim[0]/2.0 - x)*(param.dim[0]/2.0 - x) + (param.dim[1]/2.0 - y)*(param.dim[1]/2.0 - y) , 0.5);
+					
+					if (radius < maxRadius) {
+						// Gaussian curve
+					}
+				}
+			}
+			
+		}
+		
+		else {
+			base = generatePerlinNoise(param.dim, 2*param.scale);
+		}
+		
+		layer1 = generatePerlinNoise(param.dim, param.scale);
+		layer2 = generatePerlinNoise(param.dim, param.scale/2);
+		layer3 = generatePerlinNoise(param.dim, param.scale/4);
+		layer4 = generatePerlinNoise(param.dim, param.scale/8);
 		
 		for (int x = 0; x < param.dim[0]; x++) {
 			for (int y = 0; y < param.dim[1]; y++) {
 				
-				map[x][y] = (16*layer1[x][y] + 8*layer2[x][y] + 4*layer3[x][y] + 2*layer4[x][y] + layer5[x][y])/31;
+				map[x][y] = (16*base[x][y] + 8*layer1[x][y] + 4*layer2[x][y] + 2*layer3[x][y] + layer4[x][y])/31;
 			}
 		}
 		
-
 		return map;
 	}
 
@@ -63,7 +112,6 @@ public class Map {
 		for (int i = 0; i <= n; i++) {
 			for (int j = 0; j <= m; j++) {
 				randVectorGrid[i][j] = randUnitVector();
-				//System.out.println(randVectorGrid[i][j][0] + "," + randVectorGrid[i][j][1]);
 			}
 		}
 		
@@ -75,7 +123,6 @@ public class Map {
 				
 				// For an element of the map within the grid finds the "leadingIndex", i.e. the index of the top left local grid corner.
 				int[] leadingIndex = new int[] {Math.floorDiv(x, scale), Math.floorDiv(y, scale)};
-				//System.out.println(leadingIndex[0] + "," + leadingIndex[1] + ",," + x + "," + y);
 				
 				// Scales x and y to lie within [0,1]
 				double xScaled = ((double) (x - leadingIndex[0]*scale))/((double) scale);

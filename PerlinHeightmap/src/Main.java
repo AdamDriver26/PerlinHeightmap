@@ -37,14 +37,10 @@ public class Main {
 				map[x][y] = (int) (Math.random() * 255);
 			}
 		}
-		
+
 		
 		DrawHeights.drawPNG(param,Map.generateFinal(param));
-		
-//		for (int i = 0; i < 20; i++) {
-//			double[] v = Map.randVector();
-//			System.out.println(v[0] + "," + v[1]);
-//		}
+
 	}
 
 }

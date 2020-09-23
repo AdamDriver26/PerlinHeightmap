@@ -22,24 +22,29 @@ public class Config {
 	int scale;
 	// The number of interpolation points used to create the Perlin noise
 	int depth;
+	
+	String style;
 
-	Config(String n, int[] D, int l, int s, int d) {
+	Config(String n, int[] D, int l, int sc, int d, String st) {
 		name = n;
 		dim = D;
 		seaLevel = l;
-		scale = s;
+		scale = sc;
 		depth = d;
+		style = st;
+		
 	}
 
 	public static void write() throws Exception {
 
 		String defaultName = "heightmap";
-		int[] defaultDim = { 288, 240 };
-		int defaultSeaLevel = 50;
-		int defaultScale = 24;
+		int[] defaultDim = { 800, 600 };
+		int defaultSeaLevel = 118;
+		int defaultScale = 100;
 		int defaultDepth = 5;
+		String defaultStyle = "plane";
 				
-		Config defaultConfig = new Config(defaultName, defaultDim, defaultSeaLevel, defaultScale, defaultDepth);
+		Config defaultConfig = new Config(defaultName, defaultDim, defaultSeaLevel, defaultScale, defaultDepth, defaultStyle);
 
 		File param = new File("config.txt");
 		PrintStream p = new PrintStream(param);
@@ -49,6 +54,7 @@ public class Config {
 		p.println("Sea level: " + defaultConfig.seaLevel);
 		p.println("Noise scale: " + defaultConfig.scale);
 		p.println("Interpolation depth: " + defaultConfig.depth);
+		p.println("Map style: " + defaultConfig.style);
 
 		p.close();
 
@@ -66,10 +72,11 @@ public class Config {
 		int seaLevel = Integer.valueOf(s.nextLine().substring(11));
 		int scale = Integer.valueOf(s.nextLine().substring(13));
 		int depth = Integer.valueOf(s.nextLine().substring(21));
+		String style = s.nextLine().substring(11);
 
 		s.close();
 
-		return new Config(name, dim, seaLevel, scale, depth);
+		return new Config(name, dim, seaLevel, scale, depth, style);
 
 	}
 
