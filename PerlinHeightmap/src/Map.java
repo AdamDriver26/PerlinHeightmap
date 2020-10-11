@@ -37,6 +37,7 @@ public class Map {
 		
 		else if (param.style.equals("island")) {
 			int maxRadius;
+			
 			if (param.dim[0] < param.dim[1]) {
 				maxRadius = param.dim[0]/2;
 			}
@@ -45,18 +46,16 @@ public class Map {
 			}
 			
 			
-			
 			for (int x = 0; x < param.dim[0]; x++) {
 				for (int y = 0; y < param.dim[1]; y++) {
 					
 					double radius = Math.pow( (param.dim[0]/2.0 - x)*(param.dim[0]/2.0 - x) + (param.dim[1]/2.0 - y)*(param.dim[1]/2.0 - y) , 0.5);
 					
-					if (radius < maxRadius) {
-						// Gaussian curve
-					}
+					base[x][y] += (int) gaussian(153, radius, 2*maxRadius/3, -51);
+					
 				}
 			}
-			
+
 		}
 		
 		else {
@@ -98,6 +97,10 @@ public class Map {
 	
 	static double linearInterpolation(double a, double b, double t) {
 		return t*(b - a) + a;
+	}
+	
+	static double gaussian(double peak, double radius, double sigma, double base) {
+		return peak*Math.exp(- radius*radius / (sigma*sigma) ) - base;
 	}
 
 	public static int[][] generatePerlinNoise(int[] dim, int scale) {
