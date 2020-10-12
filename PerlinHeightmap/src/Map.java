@@ -4,24 +4,21 @@ public class Map {
 	public static int[][] generateFinal(Config param) {
 		
 		int[][] map = new int[ param.dim[0] ][ param.dim[1] ];
-		int[][] base = new int[ param.dim[0] ][ param.dim[1] ];
-		int[][] layer1 = new int[ param.dim[0] ][ param.dim[1] ];
-		int[][] layer2 = new int[ param.dim[0] ][ param.dim[1] ];
-		int[][] layer3 = new int[ param.dim[0] ][ param.dim[1] ];
-		int[][] layer4 = new int[ param.dim[0] ][ param.dim[1] ];
+		double[][] base = new double[ param.dim[0] ][ param.dim[1] ];
+		double[][] layer1 = new double[ param.dim[0] ][ param.dim[1] ];
+		double[][] layer2 = new double[ param.dim[0] ][ param.dim[1] ];
+		double[][] layer3 = new double[ param.dim[0] ][ param.dim[1] ];
+		double[][] layer4 = new double[ param.dim[0] ][ param.dim[1] ];
 		
 		// if/else for whether you want an island generated. If true use 3D/rotated Gaussian distribution. Otherwise use another layer of perlin noise with 2*scale.
 		
 		// The plane style randomly assigns heights at corners then interpolates bilinearly between them.
 		if (param.style.equals("plane")) {
-			// The "limit" decides the upper and lower bound of random values decided for the corners of the plane, proportional to seaLevel.
-			// TWEAK THIS
-			double limit = param.seaLevel/3.0;
 			
-			double topLeftCorner =  (255.0 - 2.0*limit) * Math.random() + limit ;
-			double topRightCorner = (255.0 - 2.0*limit) * Math.random() + limit ;
-			double bottomLeftCorner = (255.0 - 2.0*limit) * Math.random() + limit ;
-			double bottomRightCorner = (255.0 - 2.0*limit) * Math.random() + limit ;
+			double topLeftCorner = 1.6 * Math.random() - 0.8;
+			double topRightCorner = 1.6 * Math.random() - 0.8;
+			double bottomLeftCorner = 1.6 * Math.random() - 0.8;
+			double bottomRightCorner = 1.6 * Math.random() - 0.8;
 			
 			for (int x = 0; x < param.dim[0]; x++) {
 				for (int y = 0; y < param.dim[1]; y++) {
@@ -29,7 +26,7 @@ public class Map {
 					double topEdgeInterpolate = topLeftCorner*(param.dim[0] - x)/param.dim[0] + topRightCorner*x/param.dim[0];
 					double bottomEdgeInterpolate = bottomLeftCorner*(param.dim[0] - x)/param.dim[0] + bottomRightCorner*x/param.dim[0];
 					
-					base[x][y] += (int) (topEdgeInterpolate*(param.dim[1] - y)/param.dim[1] + bottomEdgeInterpolate*y/param.dim[1]);
+					base[x][y] += topEdgeInterpolate*(param.dim[1] - y)/param.dim[1] + bottomEdgeInterpolate*y/param.dim[1];
 					
 				}
 			}
@@ -51,7 +48,7 @@ public class Map {
 					
 					double radius = Math.pow( (param.dim[0]/2.0 - x)*(param.dim[0]/2.0 - x) + (param.dim[1]/2.0 - y)*(param.dim[1]/2.0 - y) , 0.5);
 					
-					base[x][y] += (int) gaussian(153, radius, 2*maxRadius/3, -51);
+					base[x][y] += gaussian(2.0, radius, 2*maxRadius/3, 1.0);
 					
 				}
 			}
@@ -70,7 +67,8 @@ public class Map {
 		for (int x = 0; x < param.dim[0]; x++) {
 			for (int y = 0; y < param.dim[1]; y++) {
 				
-				map[x][y] = (16*base[x][y] + 8*layer1[x][y] + 4*layer2[x][y] + 2*layer3[x][y] + layer4[x][y])/31;
+				double average = (16.0*base[x][y] + 8.0*layer1[x][y] + 4*layer2[x][y] + 2*layer3[x][y] + layer4[x][y])/31;
+				map[x][y] = (int) (255.0*( average + 1.0 )/2.0);
 			}
 		}
 		
@@ -103,7 +101,7 @@ public class Map {
 		return peak*Math.exp(- radius*radius / (sigma*sigma) ) - base;
 	}
 
-	public static int[][] generatePerlinNoise(int[] dim, int scale) {
+	public static double[][] generatePerlinNoise(int[] dim, int scale) {
 		// Number of grid points along the x-axis
 		int n = Math.floorDiv(dim[0], scale);
 		// Number of grid points along the y-axis
@@ -118,7 +116,7 @@ public class Map {
 			}
 		}
 		
-		int[][] map = new int[ dim[0] ][ dim[1] ];
+		double[][] map = new double[ dim[0] ][ dim[1] ];
 		
 		// Iterates elements of the map without exceeding the edges of the grid.
 		for (int x = 0; x < n*scale - 1; x++) {
@@ -150,7 +148,7 @@ public class Map {
 				double topAverage = linearInterpolation(topLeftImpact,topRightImpact,xEased);
 				double bottomAverage = linearInterpolation(bottomLeftImpact,bottomRightImpact,xEased);
 				
-				map[x][y] += ( (int) 255.0 * ( linearInterpolation(topAverage,bottomAverage,yEased) + 1.0 ) ) / 2;
+				map[x][y] += linearInterpolation(topAverage,bottomAverage,yEased);
 
 			}
 		}
@@ -158,5 +156,10 @@ public class Map {
 		return map;
 
 	}
+	
+//	public static double[][] raindrop(int[] dim, double[][] map) {
+//		
+//		
+//	}
 
 }
