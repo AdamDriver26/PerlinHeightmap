@@ -81,14 +81,12 @@ public class Map {
 		return new double[] { randVector[0]/len, randVector[1]/len };
 	}
 	
-	 // Exception handling may require changing
+	// Two dimensional dot product. No exception handling implemented.
 	static double dotProduct(double[] u, double[] v) {
-//		if (u.length != 2 || v.length != 2) {
-//			throw new Exception("Vectors are incorrect sizes");
-//		}
 		return u[0]*v[0] + u[1]*v[1];
 	}
 	
+	// Ease curve using the function 6x^5 - 15x^4 + 10x^3 .
 	static double easeCurve(double t) {
 		return 6.0*Math.pow(t, 5.0) - 15.0*Math.pow(t, 4.0) + 10.0*Math.pow(t, 3.0);
 	}

@@ -20,17 +20,14 @@ public class Config {
 	int seaLevel;
 	// The size of each square of the grid used to create the Perlin noise
 	int scale;
-	// The number of interpolation points used to create the Perlin noise
-	int depth;
-	
+	//
 	String style;
 
-	Config(String n, int[] D, int l, int sc, int d, String st) {
+	Config(String n, int[] D, int l, int sc, String st) {
 		name = n;
 		dim = D;
 		seaLevel = l;
 		scale = sc;
-		depth = d;
 		style = st;
 		
 	}
@@ -38,13 +35,12 @@ public class Config {
 	public static void write() throws Exception {
 
 		String defaultName = "heightmap";
-		int[] defaultDim = { 800, 600 };
-		int defaultSeaLevel = 118;
-		int defaultScale = 100;
-		int defaultDepth = 5;
-		String defaultStyle = "plane";
+		int[] defaultDim = { 1920, 1080 };
+		int defaultSeaLevel = 110;
+		int defaultScale = 115;
+		String defaultStyle = "island";
 				
-		Config defaultConfig = new Config(defaultName, defaultDim, defaultSeaLevel, defaultScale, defaultDepth, defaultStyle);
+		Config defaultConfig = new Config(defaultName, defaultDim, defaultSeaLevel, defaultScale, defaultStyle);
 
 		File param = new File("config.txt");
 		PrintStream p = new PrintStream(param);
@@ -53,7 +49,6 @@ public class Config {
 		p.println("Dimensions: " + defaultConfig.dim[0] + "," + defaultConfig.dim[1]);
 		p.println("Sea level: " + defaultConfig.seaLevel);
 		p.println("Noise scale: " + defaultConfig.scale);
-		p.println("Interpolation depth: " + defaultConfig.depth);
 		p.println("Map style: " + defaultConfig.style);
 
 		p.close();
@@ -71,12 +66,11 @@ public class Config {
 		int[] dim = {Integer.parseInt(stringDim[0]),Integer.parseInt(stringDim[1])};
 		int seaLevel = Integer.valueOf(s.nextLine().substring(11));
 		int scale = Integer.valueOf(s.nextLine().substring(13));
-		int depth = Integer.valueOf(s.nextLine().substring(21));
 		String style = s.nextLine().substring(11);
 
 		s.close();
 
-		return new Config(name, dim, seaLevel, scale, depth, style);
+		return new Config(name, dim, seaLevel, scale, style);
 
 	}
 
